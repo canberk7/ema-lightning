@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ema-lightning"
+version = "1.0.0"
+description = "Tiny, fast and accurate Turkish text to speech."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "Canberk Aslan" }]
+keywords = ["tts", "text-to-speech", "speech-synthesis", "turkish", "türkçe"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: Turkish",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.1",
+    "numpy>=1.24",
+    "huggingface_hub>=0.20",
+    "normalizer-tr>=0.4,<0.5",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.urls]
+Model = "https://huggingface.co/canberkkkkkk/ema-lightning"
+Documentation = "https://huggingface.co/canberkkkkkk/ema-lightning"
+Normalizer = "https://github.com/erdemtuna/normalizer-tr"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ema_lightning"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "docs", "examples", "benches", "README.md", "CHANGELOG.md", "CONTRIBUTING.md", "PERFORMANCE.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E731"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ema_lightning"]
