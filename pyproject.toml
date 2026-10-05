@@ -40,6 +40,7 @@ dev = ["pytest>=8", "ruff>=0.6"]
 Model = "https://huggingface.co/canberkkkkkk/ema-lightning"
 Documentation = "https://huggingface.co/canberkkkkkk/ema-lightning"
 Normalizer = "https://github.com/erdemtuna/normalizer-tr"
+Repository = "https://github.com/canberk7/ema-lightning"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ema_lightning"]

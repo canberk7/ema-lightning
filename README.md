@@ -178,7 +178,7 @@ order they arrive, and each round the cooks make as many dishes as fit on the
 stove, for whichever tables are next.
 
 <p align="center">
-  <img src="assets/playhead.svg" alt="Playhead: three callers feed an inbox; their sentences wait in queue 1, are thought in batches on the GPU, wait as windows in queue 2, are decoded in batches, and each window returns to its own caller's outbox. On the right, one turn of the loop as an algorithm." width="100%">
+  <img src="https://raw.githubusercontent.com/canberk7/ema-lightning/099e857cf328dd031f91e7acfac7c804e65f3673/assets/playhead.svg" alt="Playhead: three callers feed an inbox; their sentences wait in queue 1, are thought in batches on the GPU, wait as windows in queue 2, are decoded in batches, and each window returns to its own caller's outbox. On the right, one turn of the loop as an algorithm." width="100%">
 </p>
 
 **How it works.** Your text is cut into sentences, and Playhead keeps two queues,
