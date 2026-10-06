@@ -153,3 +153,24 @@ def test_best_batch_size_is_measured_once(tts, monkeypatch):
     tts._batch_size = None
     monkeypatch.setattr(type(tts), "_throughput", lambda *_: (_ for _ in ()).throw(AssertionError("measured twice")))
     assert tts.best_batch_size() == size
+
+
+def test_loading_requests_config_json_and_survives_without_it(monkeypatch):
+    from conftest import tiny_decoder, tiny_model
+
+    import ema_lightning.api as api
+
+    requested = []
+
+    def fake_download(repo, name):
+        requested.append(name)
+        if name == "config.json":
+            raise FileNotFoundError("not on the Hub")
+        return name
+
+    monkeypatch.setattr(api, "hf_hub_download", fake_download)
+    monkeypatch.setattr(api, "load_acoustic", lambda path, device: tiny_model(False))
+    monkeypatch.setattr(api, "load_decoder", lambda path, device: tiny_decoder())
+    tts = api.EMA(device="cpu")
+    assert requested == ["config.json", "ema.pt", "decoder.pt"]
+    assert tts.say("Merhaba.", seed=0).audio.size > 0

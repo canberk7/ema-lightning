@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- `EMA()` requests the model's `config.json` before the weights.
+
 ## 1.0.0
 
 First release.

@@ -46,6 +46,10 @@ class Speech:
 class EMA:
     def __init__(self, device="auto"):
         device = torch.device(("cuda" if torch.cuda.is_available() else "cpu") if device == "auto" else device)
+        try:  # the Hub counts a download each time config.json is requested; nothing here depends on it
+            hf_hub_download(REPO, "config.json")
+        except Exception:
+            pass
         model = load_acoustic(hf_hub_download(REPO, "ema.pt"), device)
         decoder = load_decoder(hf_hub_download(REPO, "decoder.pt"), device)
         self._setup(model, decoder, Frontend(model.vocab), device)
