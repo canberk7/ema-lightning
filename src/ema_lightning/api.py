@@ -30,17 +30,31 @@ from .scheduler import DONE, Playhead
 
 REPO = "canberkkkkkk/ema-lightning"
 PROBE = "Bugün hava çok güzel, yarın da yağmur yağacakmış; toplantı öğleden sonra başlayacak."
+FPS = 25  # frames per second of the acoustic model
 CACHE = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "ema_lightning" / "batch_size_v2.json"
 
 
 @dataclass(frozen=True)
+class Word:
+    """One spoken word and when it is heard, in seconds from the start of the audio.
+
+    `text` is the word as it was read aloud, after normalization: "5" comes back as "beş".
+    """
+
+    text: str
+    start: float
+    end: float
+
+
+@dataclass(frozen=True)
 class Speech:
-    """One spoken text: float32 audio in [-1, 1] at sample_rate, and the seed that made it."""
+    """One spoken text: float32 audio in [-1, 1] at sample_rate, the seed that made it, and its words' times."""
 
     audio: np.ndarray = field(repr=False)
     sample_rate: int
     duration: float
     seed: int
+    words: tuple[Word, ...] = field(default=(), repr=False)
 
 
 class EMA:
@@ -127,14 +141,14 @@ class EMA:
         if isinstance(text, str):
             seed = _seed(seed)
             request = self._submit(text, speed, seed)
-            speech = _speech(list(self._receive(request, sample_rate)), sample_rate, seed)
+            speech = _speech(list(self._receive(request, sample_rate)), sample_rate, seed, _words(request.pieces))
             if path is not None:
                 write_wav(path, speech.audio, sample_rate)
             return speech
         texts = _texts(text)
         seeds = [_seed(seed) for _ in texts]
         requests = [self._submit(t, speed, s) for t, s in zip(texts, seeds, strict=True)]
-        out = [_speech(list(self._receive(r, sample_rate)), sample_rate, s)
+        out = [_speech(list(self._receive(r, sample_rate)), sample_rate, s, _words(r.pieces))
                for r, s in zip(requests, seeds, strict=True)]
         if path is not None:
             Path(path).mkdir(parents=True, exist_ok=True)
@@ -224,7 +238,7 @@ class EMA:
                 if self.device.type == "cuda":
                     torch.cuda.synchronize(self.device)
                 best = min(best, time.perf_counter() - start)
-        return size * pieces[0].frames / 25 / best
+        return size * pieces[0].frames / FPS / best
 
 
 def _check(speed, seed, sample_rate):
@@ -246,6 +260,26 @@ def _seed(seed):
     return random.SystemRandom().randrange(2**31) if seed is None else seed
 
 
-def _speech(chunks, sample_rate, seed):
+def _speech(chunks, sample_rate, seed, words=()):
     audio = np.concatenate(chunks).astype(np.float32) if chunks else np.zeros(0, np.float32)
-    return Speech(audio, sample_rate, len(audio) / sample_rate, seed)
+    return Speech(audio, sample_rate, len(audio) / sample_rate, seed, words)
+
+
+def _words(pieces):
+    """Every word's start and end, read off the frame plan (one frame = 1/25 s) the audio was made from."""
+    words, offset = [], 0.0
+    for p in pieces:
+        if p.fw is None:  # never planned: nothing was spoken
+            continue
+        fw = p.fw.tolist()
+        first, last = {}, {}
+        for frame, w in enumerate(fw):
+            first.setdefault(w, frame)
+            last[w] = frame
+        for w, text in enumerate(p.text.split()):
+            if w in first:
+                words.append(Word(text, round(offset + first[w] / FPS, 3), round(offset + (last[w] + 1) / FPS, 3)))
+        # A piece's audio is its frames plus the pause the scheduler inserts after it
+        # (scheduler.py emits round(pause * RATE) silent samples); keep the two in step.
+        offset += len(fw) / FPS + round(p.pause * RATE) / RATE
+    return tuple(words)
