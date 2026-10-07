@@ -2,4 +2,4 @@
 from .api import EMA, Speech, Word
 
 __all__ = ["EMA", "Speech", "Word"]
-__version__ = "1.0.3"
+__version__ = "1.0.4"

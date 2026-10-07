@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+- The weights load with `torch.load(..., weights_only=True)`, so a checkpoint
+  can only hold tensors and plain values and cannot run code when it loads.
+
 ## 1.0.3
 
 - `Speech.words`: every spoken word with its `start` and `end` in seconds,
