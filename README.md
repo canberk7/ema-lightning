@@ -33,8 +33,26 @@ The full table and how it was measured are on the
 
 ## Install
 
+PyTorch's GPU and CPU wheels live on different indexes, so install torch
+first, then `ema-lightning`.
+
+**With uv** (index is selected automatically):
+
 ```sh
-python -m pip install ema-lightning
+uv add "ema-lightning[cpu]"   # CPU only — no NVIDIA packages
+uv add "ema-lightning[gpu]"   # CUDA 12.4
+```
+
+**With pip:**
+
+```sh
+# CPU only
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install ema-lightning
+
+# GPU (CUDA 12.4)
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install ema-lightning
 ```
 
 CPython 3.11 to 3.13 with PyTorch 2.1 or newer. The weights (about 34 MB) download

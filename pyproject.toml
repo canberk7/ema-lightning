@@ -26,13 +26,14 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "torch>=2.1",
     "numpy>=1.24",
     "huggingface_hub>=0.20",
     "normalizer-tr>=0.4,<0.5",
 ]
 
 [project.optional-dependencies]
+cpu = ["torch>=2.1"]
+gpu = ["torch>=2.1"]
 test = ["pytest>=8"]
 dev = ["pytest>=8", "ruff>=0.6"]
 
@@ -62,3 +63,19 @@ ignore = ["E731"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["ema_lightning"]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "extra == 'cpu'" },
+    { index = "pytorch-gpu", marker = "extra == 'gpu'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-gpu"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
