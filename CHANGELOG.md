@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.0.3
 
 - `Speech.words`: every spoken word with its `start` and `end` in seconds,
   read off the frame plan the audio is made from. Useful for captions,
-  karaoke and alignment. Adds the `Word` dataclass.
+  karaoke and alignment. Adds the `Word` dataclass. Thanks to
+  [@batuhanozkose](https://github.com/batuhanozkose)
+  ([#3](https://github.com/canberk7/ema-lightning/pull/3)).
 
 ## 1.0.1
 
