@@ -40,6 +40,18 @@ python -m pip install ema-lightning
 CPython 3.11 to 3.13 with PyTorch 2.1 or newer. The weights (about 34 MB) download
 from [Hugging Face](https://huggingface.co/canberkkkkkk/ema-lightning) on first use.
 
+On Linux the default PyTorch build includes CUDA, which pulls in about 1.5 GB of
+NVIDIA packages. On a machine without an NVIDIA GPU, install the CPU-only build
+instead:
+
+```sh
+python -m pip install ema-lightning --extra-index-url https://download.pytorch.org/whl/cpu
+```
+
+Thanks to [@keyiflerolsun](https://github.com/keyiflerolsun) for spotting the 1.5 GB
+of unneeded NVIDIA packages on CPU machines
+([#4](https://github.com/canberk7/ema-lightning/pull/4)).
+
 ## Use
 
 Make one `EMA` and keep it for the whole program. There are two ways to get
