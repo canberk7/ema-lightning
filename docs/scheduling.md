@@ -37,6 +37,11 @@ another size, which goes first in the next turn. Nothing is reordered. This keep
 a stream's one-second window from being stretched to four seconds, and keeps the
 number of shapes small for the graphs of `lightning()`.
 
+On a CPU, windows are not padded to fixed sizes, but a decode batch still never
+mixes windows of one second or less with longer ones. It stops at the first window
+of the other kind, in the same way, so a stream's first window is not padded to
+four seconds and does not wait for them.
+
 ## Batches on the fast path
 
 `lightning()` records graphs at batch sizes 1, 2, 4 and every multiple of 8 up to
