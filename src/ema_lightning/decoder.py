@@ -54,7 +54,7 @@ class Decoder(nn.Module):
 
 
 def load_decoder(path, device):
-    ck = torch.load(path, map_location="cpu", weights_only=False)
+    ck = torch.load(path, map_location="cpu", weights_only=True)
     cfg, sd = ck.get("cfg", {}), ck["G"]
     for key in [k for k in sd if k.endswith("weight_g")]:
         g, v = sd.pop(key), sd.pop(key[:-1] + "v")

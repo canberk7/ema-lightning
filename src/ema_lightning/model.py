@@ -239,7 +239,7 @@ class Acoustic(nn.Module):
 
 
 def load_acoustic(path, device):
-    ck = torch.load(path, map_location="cpu", weights_only=False)
+    ck = torch.load(path, map_location="cpu", weights_only=True)
     sd = ck["ema"]
     shared = bool(ck["cfg"].get("shared_ada", any(k.startswith("ada_shared") for k in sd)))
     model = Acoustic(ck["cfg"], ck["vocab"], shared)
