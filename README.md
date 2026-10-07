@@ -73,6 +73,28 @@ order. With `path`, the list is written into that folder as `0.wav`, `1.wav`, �
 speeches = tts.say(["Günaydın.", "Siparişiniz yola çıktı.", "İyi günler dileriz."], path="clips")
 ```
 
+### Word timings: when each word is heard
+
+Every `Speech` from `say()` carries `words`: each spoken word with its `start` and
+`end` in seconds. They come from the same frame plan the audio is made from, so
+they cost nothing extra and land exactly on the audio. Use them for live captions,
+karaoke highlighting, lip-sync, or to know where a voice agent was cut off.
+
+```python
+speech = tts.say("Merhaba, size nasıl yardımcı olabilirim?")
+for w in speech.words:
+    print(f"{w.start:5.2f}  {w.end:5.2f}  {w.text}")
+#  0.00   0.60  merhaba,
+#  0.60   0.84  size
+#  0.84   1.12  nasıl
+#  1.12   1.56  yardımcı
+#  1.56   2.12  olabilirim?
+```
+
+`text` is the word as it was read aloud, after normalization: "5 kg" comes back as
+"beş kilogram". Times are on a 40 ms grid (the model's 25 Hz frames), and the pause
+between sentences falls between two words, never inside one.
+
 ### `stream()`: hear it while it's being made
 
 ```python

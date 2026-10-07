@@ -174,3 +174,30 @@ def test_loading_requests_config_json_and_survives_without_it(monkeypatch):
     tts = api.EMA(device="cpu")
     assert requested == ["config.json", "ema.pt", "decoder.pt"]
     assert tts.say("Merhaba.", seed=0).audio.size > 0
+
+
+def test_words_cover_every_spoken_word_in_order(tts):
+    s = tts.say(TEXT, seed=0)
+    assert [w.text for w in s.words] == tts._frontend(TEXT).split()
+    assert s.words[0].start == 0.0
+    for a, b in zip(s.words, s.words[1:], strict=False):
+        assert a.start < a.end <= b.start
+    assert s.words[-1].end == pytest.approx(s.duration, abs=1e-3)
+
+
+def test_words_skip_the_pause_between_pieces(tts):
+    s = tts.say(LONG, seed=0)
+    gaps = [b.start - a.end for a, b in zip(s.words, s.words[1:], strict=False)]
+    assert max(gaps) == pytest.approx(0.25, abs=1e-3)
+    assert s.words[-1].end == pytest.approx(s.duration, abs=1e-3)
+
+
+@pytest.mark.parametrize("rate", [48000, 16000])
+def test_words_do_not_depend_on_sample_rate(tts, rate):
+    assert tts.say(TEXT, seed=1, sample_rate=rate).words == tts.say(TEXT, seed=1).words
+
+
+def test_list_gives_each_speech_its_own_words(tts):
+    many = tts.say([TEXT, LONG], seed=2)
+    assert many[0].words == tts.say(TEXT, seed=2).words
+    assert many[1].words[0].start == 0.0
