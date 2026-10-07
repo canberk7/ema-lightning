@@ -54,7 +54,7 @@ class Speech:
     sample_rate: int
     duration: float
     seed: int
-    words: tuple = field(default=(), repr=False)
+    words: tuple[Word, ...] = field(default=(), repr=False)
 
 
 class EMA:
@@ -238,7 +238,7 @@ class EMA:
                 if self.device.type == "cuda":
                     torch.cuda.synchronize(self.device)
                 best = min(best, time.perf_counter() - start)
-        return size * pieces[0].frames / 25 / best
+        return size * pieces[0].frames / FPS / best
 
 
 def _check(speed, seed, sample_rate):
@@ -279,5 +279,7 @@ def _words(pieces):
         for w, text in enumerate(p.text.split()):
             if w in first:
                 words.append(Word(text, round(offset + first[w] / FPS, 3), round(offset + (last[w] + 1) / FPS, 3)))
+        # A piece's audio is its frames plus the pause the scheduler inserts after it
+        # (scheduler.py emits round(pause * RATE) silent samples); keep the two in step.
         offset += len(fw) / FPS + round(p.pause * RATE) / RATE
     return tuple(words)

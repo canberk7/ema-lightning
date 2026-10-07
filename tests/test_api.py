@@ -187,6 +187,7 @@ def test_words_cover_every_spoken_word_in_order(tts):
 
 def test_words_skip_the_pause_between_pieces(tts):
     s = tts.say(LONG, seed=0)
+    assert [w.text for w in s.words] == tts._frontend(LONG).split()
     gaps = [b.start - a.end for a, b in zip(s.words, s.words[1:], strict=False)]
     assert max(gaps) == pytest.approx(0.25, abs=1e-3)
     assert s.words[-1].end == pytest.approx(s.duration, abs=1e-3)

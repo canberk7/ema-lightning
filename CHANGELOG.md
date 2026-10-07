@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `Speech.words`: every spoken word with its `start` and `end` in seconds,
+  read off the frame plan the audio is made from. Useful for captions,
+  karaoke and alignment. Adds the `Word` dataclass.
+
 ## 1.0.1
 
 - `EMA()` requests the model's `config.json` before the weights.
