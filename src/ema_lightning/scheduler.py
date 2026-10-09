@@ -13,7 +13,9 @@ from the front of queue 1, decodes up to one batch of windows from the front of 
 audio in order, each sentence followed by its pause. Whatever does not fit in a batch stays at the front
 for the next turn. On a GPU a decode batch holds windows of one decode size: it stops at the first window
 of another size, which goes first in the next turn, so a stream's one-second window is never stretched to
-four seconds and nothing is reordered. The loop sleeps when there is nothing to do.
+four seconds and nothing is reordered. A CPU has no decode sizes, so there a batch holds either windows of
+one second or less, or longer ones, and stops at the first window of the other kind. The loop sleeps when
+there is nothing to do.
 
 A caller who hangs up leaves both queues. If a stage fails, only the callers in that batch get the error.
 """
@@ -21,7 +23,7 @@ import collections
 import queue
 import threading
 
-from .engine import RATE, WINDOW, batches, windows
+from .engine import FIRST_WINDOW, RATE, WINDOW, batches, windows
 
 DONE = object()
 
@@ -141,12 +143,11 @@ class Playhead:
         sized = bool(getattr(self.engine, "decode_sizes", ()))
         batch, kind = [], None
         while self.windows and len(batch) < size:
-            if sized:
-                _, p, span, _ = self.windows[0]
-                this = self.engine.decode_size(p, span)
-                if kind is not None and this != kind:
-                    break
-                kind = this
+            _, p, span, _ = self.windows[0]
+            this = self.engine.decode_size(p, span) if sized else span[1] - span[0] <= FIRST_WINDOW
+            if kind is not None and this != kind:
+                break
+            kind = this
             batch.append(self.windows.popleft())
         if not batch:
             return

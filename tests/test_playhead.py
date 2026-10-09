@@ -138,6 +138,21 @@ def test_on_a_gpu_a_decode_batch_holds_one_window_size_in_arrival_order():
     assert decoded == expected  # nothing reordered: batches only stop early at a change of size
 
 
+def test_on_a_cpu_one_second_windows_are_not_batched_with_longer_ones():
+    engine = Recorder()
+    playhead = Playhead(engine, lambda: 8)
+    with playhead.cond:
+        streams = [playhead.submit(sentences(c, 1, words=9), 1.0, first=25) for c in (1, 2)]
+    for stream in streams:
+        drain(stream)
+    batches = engine.batches("decode")
+    for batch in batches:
+        assert len({e - s <= 25 for _, (s, e) in batch}) == 1, batch
+    assert [(p.seed, span) for p, span in batches[0]] == [(1000, (0, 25))]  # the one-second window, alone
+    decoded = [(p.seed, span) for batch in batches for p, span in batch]
+    assert decoded == [(1000, s) for s in windows(225, 25)] + [(2000, s) for s in windows(225, 25)]
+
+
 def test_overflow_waits_at_the_front_for_the_next_turn():
     engine = Recorder()
     playhead = Playhead(engine, lambda: 64)
