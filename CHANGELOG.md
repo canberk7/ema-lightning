@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.1
+## 1.1.2
 
 - Text frontend on normalizer-tr 0.6. Brand names keep their reading with
   Turkish suffixes (`iPhone'umdan` → "ayfonumdan", `Instagram'da` →
