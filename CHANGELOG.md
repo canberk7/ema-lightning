@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+- Text frontend on normalizer-tr 0.5. Brand names are read as they are said
+  (`ChatGPT'ye` → "çet ci pi tiye", `iPhone` → "ayfon"), more initialisms are
+  spelled (`SGK` → "se ge ka"), and other words in capitals are read as words
+  (`SON DAKİKA` → "son dakika"). Some brand names are still spelled letter by
+  letter with a suffix (`Instagram'da`); see
+  [normalizer-tr#4](https://github.com/erdemtuna/normalizer-tr/issues/4). Thanks to
+  [@ayhankorkmaz](https://github.com/ayhankorkmaz)
+  ([#8](https://github.com/canberk7/ema-lightning/issues/8)).
+- On a CPU, a stream's one-second first window is decoded on its own instead of
+  waiting in a batch with four-second windows, so its first audio comes several
+  times sooner. Thanks to [@atasoglu](https://github.com/atasoglu)
+  ([#6](https://github.com/canberk7/ema-lightning/pull/6)).
+
 ## 1.0.4
 
 - The weights load with `torch.load(..., weights_only=True)`, so a checkpoint

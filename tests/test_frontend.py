@@ -69,6 +69,9 @@ def test_long_text_is_normalized_in_safe_blocks():
         ("Bütçe 1.250.000 TL.", "bütçe bir milyon iki yüz elli bin türk lirası."),
         ("%15 indirim", "yüzde on beş indirim"),
         ("Kod: 00042", "kod: sıfır sıfır sıfır dört iki"),
+        ("ChatGPT'ye sordum.", "çet ci pi tiye sordum."),
+        ("TRT'de yayınlandı.", "te re tede yayınlandı."),
+        ("SON DAKİKA", "son dakika"),
     ],
 )
 def test_reads_numbers_and_notation_aloud(text, spoken):

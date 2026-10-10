@@ -254,8 +254,8 @@ in [many callers](docs/scheduling.md).
 
 Text goes in as people write it. [normalizer-tr](https://github.com/erdemtuna/normalizer-tr),
 with its `fallback` policy, reads numbers, dates, times, amounts, units,
-abbreviations and symbols aloud, and spells out anything it cannot resolve instead
-of skipping it. Long text is cut at sentence and clause boundaries, with natural
+abbreviations, brand names and symbols aloud, and spells out anything it cannot
+resolve instead of skipping it. Long text is cut at sentence and clause boundaries, with natural
 pauses between the pieces.
 
 | Written | Spoken |
@@ -265,9 +265,11 @@ pauses between the pieces.
 | `12,5 kg un` | on iki virgül beş kilogram un |
 | `Dr. Ayşe geldi.` | doktor ayşe geldi. |
 | `Kod: 00042` | kod: sıfır sıfır sıfır dört iki |
+| `ChatGPT'ye sordum.` | çet ci pi tiye sordum. |
 
-Words written in all capitals are spelled letter by letter. The
-[text guide](docs/text.md) has the full pipeline and its known limits.
+Common initialisms such as `TRT` are spelled letter by letter, and other words in
+capitals are read as words. The [text guide](docs/text.md) has the full pipeline
+and its known limits.
 
 ## Speed
 
