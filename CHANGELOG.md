@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
 - Text frontend on normalizer-tr 0.5. Brand names are read as they are said
   (`ChatGPT'ye` → "çet ci pi tiye", `iPhone` → "ayfon"), more initialisms are
