@@ -5,9 +5,9 @@ Every call goes through the same steps before the model sees the text.
 1. **Clean.** Control and bidirectional formatting characters become spaces.
    Invalid UTF-8 is dropped.
 2. **Normalize.** [normalizer-tr](https://github.com/erdemtuna/normalizer-tr)
-   0.5 with `ambiguity_policy="fallback"` writes numbers, dates, times, money,
-   units, abbreviations, brand names and symbols as spoken Turkish. Text is sent in blocks of
-   up to 8 KiB, split at whitespace.
+   0.6 or newer with `ambiguity_policy="fallback"` writes numbers, dates, times,
+   money, units, abbreviations, brand names and symbols as spoken Turkish. Text is
+   sent in blocks of up to 8 KiB, split at whitespace.
 3. **Alphabet.** Turkish lowercasing (`İ` → `i`, `I` → `ı`), typographic quotes,
    dashes and ellipses mapped to plain ones, accents removed from non-Turkish
    letters (`é` → `e`), and anything the model cannot read dropped.
@@ -31,6 +31,7 @@ clear formats, then literal readings and named symbols, then Unicode codes.
 | `Dr. Ayşe geldi.` | doktor ayşe geldi. |
 | `Kod: 00042` | kod: sıfır sıfır sıfır dört iki |
 | `ChatGPT'ye sordum.` | çet ci pi tiye sordum. |
+| `iPhone'umdan aradım.` | ayfonumdan aradım. |
 | `TRT'de yayınlandı.` | te re tede yayınlandı. |
 | `SON DAKİKA` | son dakika |
 | `🙂` | gülümseyen yüz |
@@ -40,11 +41,8 @@ clear formats, then literal readings and named symbols, then Unicode codes.
 These come from fallback's rules, which are documented in
 [normalizer-tr](https://github.com/erdemtuna/normalizer-tr/blob/main/docs/fallback.md):
 
-- **Some brand names are spelled letter by letter with a suffix.** `Instagram'da`
-  is read as "ı ne se te a ge re a me kesme de a", while `Instagram` and
-  `YouTube'da` are read as said
-  ([normalizer-tr#4](https://github.com/erdemtuna/normalizer-tr/issues/4)).
-  Write the word as it is said (`instagramda`) when it matters.
+- **A brand name's suffix has to fit how the name is said.** `Instagram'a` is
+  read as "instagrama", but `Instagram'e` is spelled letter by letter.
 - **Initialisms it does not know are read as words.** `KKTC` is read as "kktc".
   Write the letters as said (`ke ke te ce`) when it matters.
 - **Ordinals are not inferred from a period.** `3. kat` is read as "üç. kat".

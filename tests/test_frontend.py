@@ -70,6 +70,7 @@ def test_long_text_is_normalized_in_safe_blocks():
         ("%15 indirim", "yüzde on beş indirim"),
         ("Kod: 00042", "kod: sıfır sıfır sıfır dört iki"),
         ("ChatGPT'ye sordum.", "çet ci pi tiye sordum."),
+        ("Instagram'da gördüm, WhatsApp'tan yazdım.", "instagramda gördüm, vatsaptan yazdım."),
         ("TRT'de yayınlandı.", "te re tede yayınlandı."),
         ("SON DAKİKA", "son dakika"),
     ],
