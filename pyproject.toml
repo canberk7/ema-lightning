@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ema-lightning"
-version = "1.1.0"
+version = "1.1.1"
 description = "Tiny, fast and accurate Turkish text to speech."
 readme = "README.md"
 license = "Apache-2.0"

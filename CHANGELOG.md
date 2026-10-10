@@ -1,11 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.1.1
 
 - Text frontend on normalizer-tr 0.6. Brand names keep their reading with
   Turkish suffixes (`iPhone'umdan` → "ayfonumdan", `Instagram'da` →
   "instagramda", `WhatsApp'tan` → "vatsaptan") instead of being spelled letter
   by letter. `Instagram` is now read as "instagram" and `WhatsApp` as "vatsap".
+  Any later normalizer-tr 0.x release is accepted too.
 
 ## 1.1.0
 
