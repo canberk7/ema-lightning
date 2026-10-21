@@ -16,6 +16,7 @@ from ema_lightning.phonetics import phoneticize_tr
         ("TypeScript", "taypsikript"),
         ("UNESCO, UNICEF, UEFA ve IKEA", "UNESCO, UNICEF, UEFA ve IKEA"),
         ("croissant!", "kruvasan!"),
+        ("hyperparameterization", "hyperparameterization"),  # too long to trust the network
         ("coffee, please.", "kafi, pliz."),
         ("developer'ın commit'i", "divelopır'ın komit'i"),
         ("GitHub'a push ettik.", "githab'a puş ettik."),
@@ -40,7 +41,7 @@ def test_phoneticize_tr(source, expected):
         "Çocuklar bahçede oyun oynuyorlar.",
         "Bugun cay icip gunes altinda oturduk, deger mi?",  # typed without Turkish letters
         "Agac altinda universite sinavina calistik.",
-        "Datca, Nilufer ve Trabzonspor.",
+        "Ataturk, Datca, Nilufer ve Trabzonspor.",
     ],
 )
 def test_pure_turkish_sentences_are_preserved(turkish_sentence):

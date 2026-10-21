@@ -51,6 +51,9 @@ TURKISH_SUFFIX = re.compile(
     r"(l[ae]r|d[ae]|t[ae]|[ıiuüae]|n[ıiuüae]|y[ıiuüae]|s[ıiuü]|m|k|c[ıiuü]|ç[ıiuü]|l[ıiuü]|k[ıiuü]|m[ae]|ş)"
 )
 STRONG_MIN, LEXICON_MIN = -1.0, 1.0
+# The network garbles long words it has not seen (hyperparameterization): a quarter of the phonemes go
+# wrong from about this length even on its training words, so Turkish rules read them better.
+GUESS_MAX = 13
 
 # A word on its own: not glued to an address, a file name or code (www.google.com, ali@gmail.com, next.js).
 TOKEN = re.compile(r"(?<![\w@/])(?<!\w\.)[^\W\d_]+(?![\w@])(?![./:]\w)")
@@ -109,7 +112,7 @@ def is_foreign(word):
     # Letter patterns alone misread unlisted Turkish (agac, gunes, nilufer), so a word needs English spelling
     # or a CMUdict entry before its letters are weighed.
     if ENGLISH_SPELLING.search(word):
-        return englishness(word) > STRONG_MIN
+        return englishness(word) > STRONG_MIN and (len(word) <= GUESS_MAX or english.known(word))
     return english.known(word) and englishness(word) > LEXICON_MIN
 
 

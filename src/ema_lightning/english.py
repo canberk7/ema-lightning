@@ -21,7 +21,7 @@ PHONEMES = ["<pad>", "<unk>", "<s>", "</s>"] + [
 ]
 G2IDX = {g: i for i, g in enumerate(GRAPHEMES)}
 P2IDX = {p: i for i, p in enumerate(PHONEMES)}
-START, END, MAX_PHONES = 2, 3, 20
+START, END, MAX_PHONES = 2, 3, 32  # the longest CMUdict word has 28 phonemes
 CODE_BASE = 0x30  # the lexicon writes phoneme i as chr(CODE_BASE + i)
 
 DATA = resources.files("ema_lightning") / "data"

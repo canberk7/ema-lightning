@@ -4,19 +4,20 @@ Inputs (none of them ship with the package):
   --cmudict      cmudict.dict from https://github.com/cmusphinx/cmudict (BSD-2-Clause)
   --checkpoint   checkpoint20.npz from the g2p_en wheel (Apache-2.0)
   --tr-freq      Turkish word frequency list, "word count" per line, most frequent first
-                 (tr_50k.txt from https://github.com/hermitdave/FrequencyWords, content/2018)
+                 (tr_full.txt from https://github.com/hermitdave/FrequencyWords, content/2018)
   --en-freq      English word frequency list in the same format (en_50k.txt from the same place),
                  only used to filter the Turkish list
 
 Outputs in src/ema_lightning/data/:
   en_g2p.npz       int8 GRU weights
   en_lexicon.xz    every CMUdict word; the phonemes are kept only where the network disagrees
-  tr_words.xz      frequent Turkish words written with ASCII letters, as is or typed without Turkish letters
+  tr_words.xz      frequent Turkish words written with ASCII letters, as is (top --tr-words) or typed
+                   without Turkish letters (top --tr-ascii-words)
   lang_ngrams.xz   character trigram log-odds, English versus Turkish
 
 Usage:
   python tools/build_phonetics.py --cmudict cmudict.dict --checkpoint checkpoint20.npz \
-      --tr-freq tr_50k.txt --en-freq en_50k.txt
+      --tr-freq tr_full.txt --en-freq en_50k.txt
 """
 import argparse
 import io
@@ -95,14 +96,15 @@ def build_lexicon(lexicon, net, batch=512):
     return kept, len(words)
 
 
-def build_turkish(tr, en):
+def build_turkish(tr, tr_deep, en):
     en_freq = dict(en)
     en_total, tr_total = sum(en_freq.values()), sum(c for _, c in tr)
+    # Words with Turkish letters are recognised without a list, but people often type them without
+    # (değer -> deger, Atatürk -> Ataturk), so their ASCII form goes in, from deeper in the list: the
+    # Turkish letters prove the word Turkish.
+    deep = [(w.translate(ASCII), c) for w, c in tr_deep if not WORD.fullmatch(w)]
     words = set()
-    for word, count in tr:
-        # Words with Turkish letters are recognised without a list, but people often type them without
-        # (değer -> deger, çay -> cay), so their ASCII form goes in.
-        word = word.translate(ASCII)
+    for word, count in tr + deep:
         if not WORD.fullmatch(word):
             continue
         # Subtitles contain English too ("okay", "yeah"). Frequency ratios misjudge short shared words
@@ -141,15 +143,17 @@ def main():
     parser.add_argument("--tr-freq", required=True)
     parser.add_argument("--en-freq", required=True)
     parser.add_argument("--tr-words", type=int, default=50000)
+    parser.add_argument("--tr-ascii-words", type=int, default=100000)
     args = parser.parse_args()
 
     OUT.mkdir(parents=True, exist_ok=True)
     lexicon = read_cmudict(args.cmudict)
     net = build_network(args.checkpoint)
     kept, total = build_lexicon(lexicon, net)
-    tr = read_freq(args.tr_freq, args.tr_words)
+    tr_deep = read_freq(args.tr_freq, max(args.tr_words, args.tr_ascii_words))
+    tr = tr_deep[:args.tr_words]
     en = read_freq(args.en_freq, 10 ** 9)
-    turkish = build_turkish(tr, en)
+    turkish = build_turkish(tr, tr_deep[:args.tr_ascii_words], en)
     ngrams = build_ngrams(tr, lexicon)
     print(f"lexicon: {total} words, {kept} need stored phonemes (n={NGRAM} grams: {ngrams}, tr words: {len(turkish)})")
     for path in sorted(OUT.iterdir()):

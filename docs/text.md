@@ -60,3 +60,15 @@ These come from fallback's rules, which are documented in
 
 If normalization ever fails (invalid input or a resource limit), the block is
 kept as written rather than dropped, and synthesis continues.
+
+### English words
+
+Reading Turkish as English is worse than missing an English word, so the
+Phoneticize step leans Turkish:
+
+- **English words that could be Turkish stay Turkish.** `laptop`, `online` and
+  `police` are read with Turkish spelling rules.
+- **Words in capitals are left as written.** `UNICEF` and `ICED LATTE` are read
+  the Turkish way, and initialisms such as `API` are spelled by normalizer-tr.
+- **Long words missing from CMUdict are not guessed.** Past 13 letters the network
+  drops sounds (`hyperparameterization`), so Turkish rules read them.
