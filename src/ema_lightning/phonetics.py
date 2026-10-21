@@ -37,6 +37,7 @@ EXCEPTIONS = {
     "push": "puş",
     "imac": "aymek",
     "software": "softveyır",
+    "react": "reakt",
 }
 
 NGRAM = 3

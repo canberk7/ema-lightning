@@ -14,6 +14,7 @@ from ema_lightning.phonetics import phoneticize_tr
         ("UNITY", "yuniti"),
         ("JavaScript", "javasikript"),
         ("TypeScript", "taypsikript"),
+        ("React Native ile React'te yazdık.", "reakt neytiv ile reakt'te yazdık."),
         ("UNESCO, UNICEF, UEFA ve IKEA", "UNESCO, UNICEF, UEFA ve IKEA"),
         ("croissant!", "kruvasan!"),
         ("hyperparameterization", "hyperparameterization"),  # too long to trust the network
