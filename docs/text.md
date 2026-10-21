@@ -4,14 +4,22 @@ Every call goes through the same steps before the model sees the text.
 
 1. **Clean.** Control and bidirectional formatting characters become spaces.
    Invalid UTF-8 is dropped.
-2. **Normalize.** [normalizer-tr](https://github.com/erdemtuna/normalizer-tr)
+2. **Phoneticize.** English words (`software developer`, `deploy`, `backend`,
+   `cluster`) are respelled the Turkish way (`softveyır divelopır`, `diploy`,
+   `bekend`, `klastır`) by a small offline G2P: CMUdict with an int8 GRU
+   fallback. Words that look Turkish stay as written, also when typed without
+   Turkish letters (`cay`, `deger`), and so do words normalizer-tr already reads
+   itself, such as brand names (`Google'da` → "gugılda"), words in capitals
+   (`UNICEF`, `API`), and anything inside a web or e-mail address. A suffix
+   after an apostrophe (`developer'ın`) is kept.
+3. **Normalize.** [normalizer-tr](https://github.com/erdemtuna/normalizer-tr)
    0.6 or newer with `ambiguity_policy="fallback"` writes numbers, dates, times,
    money, units, abbreviations, brand names and symbols as spoken Turkish. Text is
    sent in blocks of up to 8 KiB, split at whitespace.
-3. **Alphabet.** Turkish lowercasing (`İ` → `i`, `I` → `ı`), typographic quotes,
+4. **Alphabet.** Turkish lowercasing (`İ` → `i`, `I` → `ı`), typographic quotes,
    dashes and ellipses mapped to plain ones, accents removed from non-Turkish
    letters (`é` → `e`), and anything the model cannot read dropped.
-4. **Split.** Pieces of at most about 10 seconds (250 letters at speed 1.0) are cut
+5. **Split.** Pieces of at most about 10 seconds (250 letters at speed 1.0) are cut
    at sentence ends first, then at commas, semicolons and colons, then at spaces.
    A sentence end adds a 0.25 s pause, any other cut 0.12 s.
 

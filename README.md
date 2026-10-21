@@ -286,7 +286,9 @@ numbers and how to measure on your own machine are in
 ## Limitations
 
 - **One voice.** No voice cloning and no emotion control.
-- **Turkish only.** Foreign words are read with Turkish spelling rules.
+- **Turkish only.** English words that look English are respelled the way Turkish
+  speakers say them (`developer` → "divelopır"); English words that look Turkish
+  (`laptop`, `online`) and other languages are read with Turkish spelling rules.
 - **Naturalness is good, not the best.** UTMOS is about 3.30 on Freya-TR-Eval:
   level with ElevenLabs v4, below Gemini 3.8 and Trendyol-TTS.
 - **Word error rate is measured with Whisper,** so some of the counted errors are
