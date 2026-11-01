@@ -7,6 +7,54 @@ from conftest import VOCAB
 
 from ema_lightning.frontend import BLOCK_BYTES, POLICY, Frontend, blocks
 
+
+def test_phonetics_runs_before_normalizer():
+    class PhoneticRecorder:
+        def __init__(self):
+            self.text = None
+            self.policy = None
+
+        def normalize(self, text, *, ambiguity_policy="preserve", **_):
+            self.text = text
+            self.policy = ambiguity_policy
+            return types.SimpleNamespace(normalized_text=text)
+
+    f = Frontend(VOCAB)
+    recorder = PhoneticRecorder()
+    f.normalizer = recorder
+
+    result = f.spoken("GitHub ve Unity")
+
+    assert recorder.text == "githab ve yuniti"
+    assert recorder.policy == POLICY
+    assert result == "githab ve yuniti"
+
+
+def test_phonetics_are_preserved_if_normalizer_fails():
+    class Broken:
+        def normalize(self, *_, **__):
+            raise RuntimeError("test error")
+
+    f = Frontend(VOCAB)
+    f.normalizer = Broken()
+
+    assert f.spoken("GitHub") == "githab"
+
+
+@pytest.mark.skipif(not hasattr(normalizer_tr, "NORMALIZER_ID"), reason="normalizer-tr not installed")
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        ("Google'da aradım.", "gugılda aradım."),  # the normalizer's brand reading keeps the suffix joined
+        ("www.google.com", "çift ve çift ve çift ve nokta google nokta kom"),
+        ("ali@gmail.com yaz.", "ali et gmail nokta kom yaz."),
+        ("Feedback verir misin?", "fidbek verir misin?"),
+    ],
+)
+def test_phonetics_leave_what_the_normalizer_reads(source, expected):
+    assert Frontend(VOCAB)(source) == expected
+
+
 ALPHABET = set(VOCAB[2:])
 real_normalizer = pytest.mark.skipif(not hasattr(normalizer_tr, "NORMALIZER_ID"), reason="normalizer-tr not installed")
 

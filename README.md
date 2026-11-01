@@ -11,7 +11,8 @@ machine.
   than real time, and batched work 1,316× (RTX 4090).
 - **Cheap:** about $0.0085 per million characters on a rented RTX 4090.
 - **Takes Turkish as people write it:** numbers, dates, times, money, units,
-  abbreviations and symbols are read aloud.
+  abbreviations and symbols are read aloud, and English words the way Turkish
+  speakers say them (`developer` → "divelopır").
 - **Streams:** audio starts while the rest of the text is still being made.
 - **One model serves many callers:** call it from as many threads as you like.
   Its built-in scheduler, Playhead, runs everyone's work together on the GPU. No
@@ -39,6 +40,8 @@ python -m pip install ema-lightning
 
 CPython 3.11 to 3.13 with PyTorch 2.1 or newer. The weights (about 34 MB) download
 from [Hugging Face](https://huggingface.co/canberkkkkkk/ema-lightning) on first use.
+The English pronunciation data (about 1.4 MB) ships with the package, so it works
+offline too.
 
 On Linux the default PyTorch build includes CUDA, which pulls in about 1.5 GB of
 NVIDIA packages. On a machine without an NVIDIA GPU, install the CPU-only build
@@ -266,9 +269,14 @@ pauses between the pieces.
 | `Dr. Ayşe geldi.` | doktor ayşe geldi. |
 | `Kod: 00042` | kod: sıfır sıfır sıfır dört iki |
 | `ChatGPT'ye sordum.` | çet ci pi tiye sordum. |
+| `Software developer olarak çalışıyorum.` | softveyır divelopır olarak çalışıyorum. |
+| `Kodu deploy ettim, feedback'ini bekliyorum.` | kodu diploy ettim, fidbek'ini bekliyorum. |
 
-Common initialisms such as `TRT` are spelled letter by letter, and other words in
-capitals are read as words. The [text guide](docs/text.md) has the full pipeline
+English words are respelled the way Turkish speakers say them, from CMUdict with
+a small int8 network (0.8M parameters, run with NumPy) for words it does not have.
+Turkish stays as written, also when typed without Turkish letters (`Bugun cay
+ictik.`). Common initialisms such as `TRT` are spelled letter by letter, and other
+words in capitals are read as words. The [text guide](docs/text.md) has the full pipeline
 and its known limits.
 
 ## Speed
@@ -286,7 +294,10 @@ numbers and how to measure on your own machine are in
 ## Limitations
 
 - **One voice.** No voice cloning and no emotion control.
-- **Turkish only.** Foreign words are read with Turkish spelling rules.
+- **Turkish only.** English words are respelled the way Turkish speakers say them
+  (`developer` → "divelopır"). English words that could be Turkish (`laptop`,
+  `online`, `police`), words in capitals (`ICED LATTE`), long words missing from
+  CMUdict and other languages are read with Turkish spelling rules.
 - **Naturalness is good, not the best.** UTMOS is about 3.30 on Freya-TR-Eval:
   level with ElevenLabs v4, below Gemini 3.8 and Trendyol-TTS.
 - **Word error rate is measured with Whisper,** so some of the counted errors are
@@ -310,13 +321,19 @@ Special thanks to **[Erdem Tuna](https://github.com/erdemtuna)**, who built
 normalizer behind EMA Lightning. Every number, date, amount and symbol you hear
 read aloud goes through his work.
 
-Thanks also to Freya for the Freya-TR-Eval benchmark, and to the Anka TTS authors
-for the published baselines marked †.
+Thanks also to Freya for the Freya-TR-Eval benchmark, to the Anka TTS authors
+for the published baselines marked †, and to the
+[CMU Pronouncing Dictionary](https://github.com/cmusphinx/cmudict),
+[g2p_en](https://github.com/Kyubyong/g2p) and
+[FrequencyWords](https://github.com/hermitdave/FrequencyWords), behind the English
+pronunciations.
 
 ## License
 
 [Apache-2.0](LICENSE), for the code and the weights. Commercial use included.
-normalizer-tr is also Apache-2.0.
+normalizer-tr is also Apache-2.0. The bundled English pronunciation data keeps its
+own licenses (BSD-2-Clause, Apache-2.0, CC BY-SA 4.0), listed in
+[NOTICE](src/ema_lightning/data/NOTICE).
 
 ## Citation
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- English words in Turkish text are respelled the way Turkish speakers say them
+  (`Software developer` → "softveyır divelopır", `deploy` → "diploy") by a small
+  offline G2P: CMUdict and an int8 GRU fallback run with NumPy. Words that look
+  Turkish (also when typed without Turkish letters: `cay`, `deger`), words in
+  capitals (`UNICEF`, `API`), brand names normalizer-tr already reads
+  (`Google'da` → "gugılda") and web or e-mail addresses are left to
+  normalizer-tr. Third-party data notices are in `ema_lightning/data/NOTICE`.
+
 ## 1.1.2
 
 - Text frontend on normalizer-tr 0.6. Brand names keep their reading with

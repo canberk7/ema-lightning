@@ -7,3 +7,4 @@ dist/
 *.egg-info/
 *.wav
 .DS_Store
+.venv/
